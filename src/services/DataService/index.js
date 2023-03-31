@@ -1,8 +1,8 @@
 import axios from 'axios';
 
-async function getGitHubUser(user) {
-  const URI = `https://api.github.com/users/${user}`;
-  return await axios.get(URI);
+async function gitHubSearch(request) {
+  const URL = `https://api.github.com/search/repositories?q=${request}`;
+  return await axios.get(URL);
 }
 
-export default getGitHubUser;
+export default gitHubSearch;
