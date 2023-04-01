@@ -1,68 +1,59 @@
 import React, { useEffect, useState } from 'react';
-import gitHubSearch from '../../services/DataService';
+import fetchGitHubData from '../../services/DataService';
+import ListItem from '../ListItem/ListItem';
+import { useErrorBoundary } from 'react-error-boundary';
+import { v4 as uuidv4 } from 'uuid';
 
-export default function Search({ request }) {
+export default function Search({ searchTerm = '', page, setPage }) {
   const [searchResults, setSearchResults] = useState([]);
-  const [page, setPage] = useState(1);
   const [numeration, setNumeration] = useState(0);
   const [direction, setDirection] = useState('+');
+  const { showBoundary } = useErrorBoundary();
 
   useEffect(() => {
-    if (request !== null) {
-      gitHubSearch(`${request}+sort:stars&per_page=20&page=${page}`)
-        .then((response) => {
-          setSearchResults(response.data.items);
-          if (page !== 1)
+    if (searchTerm !== '') {
+      fetchGitHubData(`${searchTerm}+sort:stars&per_page=20&page=${page}`)
+        .then(({ data: { items } }) => {
+          setSearchResults(items);
+          if (page !== 1) {
             direction === '+'
-              ? setNumeration(prev => prev + 20)
-              : setNumeration(prev => prev - 20);
+              ? setNumeration((prev) => prev + 20)
+              : setNumeration((prev) => prev - 20);
+          } else {
+            setNumeration(0);
+            setPage(1);
+            setDirection('+');
+          }
         })
         .catch((error) => {
-          console.log(error);
-          setSearchResults([
-            {
-              name: '403 Forbidden. Please wait few seconds, reload and try again',
-              html_url: '/',
-            },
-          ]);
-          setPage(1);
-          setNumeration(0);
+          showBoundary(error);
         });
     }
-  }, [request, page, setSearchResults, direction]);
+  }, [searchTerm, page, direction, setPage, showBoundary]);
 
-  useEffect(() => {
-    setNumeration(0);
-  }, [request]);
-
-  const handleNextPage = () => {
-    setPage(prev => prev + 1);
-    setDirection('+');
-  };
-
-  const handlePreviousPage = () => {
-    setPage(prev => prev - 1);
-    setDirection('-');
+  const handlePageChange = (delta) => {
+    setPage((prev) => prev + delta);
+    setDirection(delta > 0 ? '+' : '-');
   };
 
   return (
     <div>
-      {searchResults &&
-        searchResults.map((item, i) => (
-          <div key={item.id}>
-            {numeration + i + 1}. <a href={item.html_url}>{item.name}</a>
-          </div>
-        ))}
+      {searchResults?.map((item, i) => (
+        <ListItem
+          key={uuidv4()}
+          index={numeration + i + 1}
+          name={item.name}
+          url={item.html_url}
+        />
+      ))}
+
       <div>
-        <button disabled={page === 1} onClick={handlePreviousPage}>
+        <button disabled={page === 1} onClick={() => handlePageChange(-1)}>
           Previous
         </button>
         <button
-          disabled={
-            searchResults === [] ||
-            (searchResults !== null && searchResults.length < 20)
-          }
-          onClick={handleNextPage}
+          disabled={searchResults?.length < 20}
+          onClick={() => handlePageChange(1)}
         >
           Next
         </button>
