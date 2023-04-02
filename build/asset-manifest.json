@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/github-search-sobkiv/static/css/main.2d5b644f.css",
+    "main.js": "/github-search-sobkiv/static/js/main.8d3e8b08.js",
+    "static/js/787.48b3ded6.chunk.js": "/github-search-sobkiv/static/js/787.48b3ded6.chunk.js",
+    "index.html": "/github-search-sobkiv/index.html",
+    "main.2d5b644f.css.map": "/github-search-sobkiv/static/css/main.2d5b644f.css.map",
+    "main.8d3e8b08.js.map": "/github-search-sobkiv/static/js/main.8d3e8b08.js.map",
+    "787.48b3ded6.chunk.js.map": "/github-search-sobkiv/static/js/787.48b3ded6.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.2d5b644f.css",
+    "static/js/main.8d3e8b08.js"
+  ]
+}
